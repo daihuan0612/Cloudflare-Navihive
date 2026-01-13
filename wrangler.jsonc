@@ -22,6 +22,7 @@
         }
     ],
     "vars": {
+        "AUTH_REQUIRED_FOR_READ": "false"
         "AUTH_ENABLED": "true",
         "AUTH_USERNAME": "linuxdo",
         "AUTH_PASSWORD": "linuxdo",
