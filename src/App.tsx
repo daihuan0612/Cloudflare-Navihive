@@ -97,6 +97,7 @@ const DEFAULT_CONFIGS = {
   'site.iconApi': 'https://www.faviconextractor.com/favicon/{domain}?larger=true', // 默认使用的API接口，带上 ?larger=true 参数可以获取最大尺寸的图标
   'site.searchBoxEnabled': 'true', // 是否启用搜索框
   'site.searchBoxGuestEnabled': 'true', // 访客是否可以使用搜索框
+  'site.faviconUrl': '', // 自定义网站图标URL
 };
 
 function App() {
@@ -354,9 +355,38 @@ function App() {
     setCurrentSortingGroupId(null);
   }, []);
 
-  // 设置文档标题
+  // 设置文档标题和favicon
   useEffect(() => {
     document.title = configs['site.title'] || '导航站';
+    
+    // 动态更新favicon
+    const updateFavicon = (url: string) => {
+      const existingLink = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+      
+      if (url && url.trim() !== '') {
+        // 如果有自定义favicon URL，使用它
+        if (existingLink) {
+          existingLink.href = url;
+        } else {
+          const link = document.createElement('link');
+          link.rel = 'icon';
+          link.href = url;
+          document.head.appendChild(link);
+        }
+      } else {
+        // 如果没有自定义favicon URL，使用默认的
+        if (existingLink) {
+          existingLink.href = '/favicon.ico';
+        } else {
+          const link = document.createElement('link');
+          link.rel = 'icon';
+          link.href = '/favicon.ico';
+          document.head.appendChild(link);
+        }
+      }
+    };
+    
+    updateFavicon(configs['site.faviconUrl'] || '');
   }, [configs]);
 
   // 应用自定义CSS
@@ -1559,6 +1589,25 @@ function App() {
                   value={tempConfigs['site.name']}
                   onChange={handleConfigInputChange}
                 />
+                {/* 网站图标URL设置项 */}
+                <Box sx={{ mb: 1 }}>
+                  <Typography variant='subtitle1' gutterBottom>
+                    网站图标设置
+                  </Typography>
+                  <TextField
+                    margin='dense'
+                    id='site-favicon-url'
+                    name='site.faviconUrl'
+                    label='网站图标URL (留空则使用默认)'
+                    type='url'
+                    fullWidth
+                    variant='outlined'
+                    value={tempConfigs['site.faviconUrl']}
+                    onChange={handleConfigInputChange}
+                    placeholder='https://example.com/favicon.ico'
+                    helperText='输入网站图标URL，支持 .ico, .png, .jpg, .svg 等格式'
+                  />
+                </Box>
                 {/* 获取图标API设置项 */}
                 <Box sx={{ mb: 1 }}>
                   <Typography variant='subtitle1' gutterBottom>
